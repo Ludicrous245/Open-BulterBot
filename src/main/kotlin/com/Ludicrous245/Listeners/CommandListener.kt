@@ -1,5 +1,6 @@
 package com.Ludicrous245.Listeners
 
+import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
 import com.Ludicrous245.tools.kits.MuteKit
 import com.Ludicrous245.tools.supporter.Embeded
@@ -31,7 +32,11 @@ class CommandListener : ListenerAdapter(){
             }
 
             if(!Storage.guildPrefix.containsKey(message.guild.id)){
-                Storage.guildPrefix.put(message.guild.id, "$")
+                if(Config.dev) {
+                    Storage.guildPrefix.put(message.guild.id, ".$")
+                }else {
+                    Storage.guildPrefix.put(message.guild.id, "$")
+                }
             }
 
             if(!Storage.isLoop.containsKey(message.guild)){

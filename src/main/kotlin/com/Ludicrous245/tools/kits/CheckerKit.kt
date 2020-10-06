@@ -7,8 +7,12 @@ class CheckerKit {
     companion object{
         fun isURL(text:String):Boolean{
             try{
-                URL(text)
-                return true
+                 URL(text)
+                if(text.contains("youtu") || text.contains("soundcloud")){
+                    return true
+                }
+
+                return false
             }catch (e:Exception){
                 return false
             }

@@ -125,6 +125,7 @@ class YoutubeManager(){
                 }
 
             }else{
+                Storage.playerSearching.put(message.member, false)
                 message.channel.sendMessage("검색결과가 없습니다.").queue()
                 return
             }

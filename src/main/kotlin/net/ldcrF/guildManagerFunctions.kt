@@ -27,12 +27,13 @@ class guildManagerFunctions : CommandExecutor() {
                 if (args.size == 0) {
                     channel.sendMessage("잘못된 사용방법입니다").queue()
                 } else {
-                    if(Storage.client!!.getUserById(ConverterKit.convertID(rawSyntax)) == null){
+
+                    if(message.getMentionedMembers(message.guild).isEmpty()){
                         channel.sendMessage("유저를 찾을 수 없습니다.").queue()
                         return
                     }
 
-                    if(Storage.client!!.getUserById(ConverterKit.convertID(rawSyntax))!!.isBot){
+                    if(message.getMentionedMembers(message.guild).get(0).user.isBot){
                         channel.sendMessage("봇은 뮤트할 수 없습니다.").queue()
                         return
                     }

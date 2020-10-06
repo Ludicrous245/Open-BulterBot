@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "com.Ludicrous245"
-version = "1.3.1-LTS"
+version = "1.3.5-LTS"
 
 repositories {
     mavenCentral()

@@ -20,7 +20,13 @@ fun main(args:Array<String>){
     이름은 사실 그냥 있어보여서 붙임*/
     var mode = 0
 
-    val builder:JDABuilder = JDABuilder.createDefault(Config.token)
+    val builder: JDABuilder
+
+    if(Config.dev) {
+        builder = JDABuilder.createDefault(Config.devtoken)
+    }else{
+        builder = JDABuilder.createDefault(Config.token)
+    }
     builder.setActivity(Activity.playing("시작중..."))
     builder.addEventListeners(CommandListener())
     builder.addEventListeners(InteractionListener())
