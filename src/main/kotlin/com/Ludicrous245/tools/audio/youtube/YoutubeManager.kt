@@ -166,13 +166,13 @@ class YoutubeManager(){
 
             msg!!.editMessage(eb.build()).queue()
 
-            manager.playL(message.textChannel, message.channel, "https://www.youtube.com/watch?v=" + vid)
+            manager.playL(message.textChannel, message.channel, "https://www.youtube.com/watch?v=" + vid, false, message)
 
             if (!Storage.serverVol.containsKey(message.guild)) {
                 Storage.serverVol.put(message.guild, 50)
             }
 
-            manager.getGuildMusicManager(message.guild, message.channel).player.volume = Storage.serverVol.get(message.guild)!!
+            manager.getGuildMusicManager(message.guild, message.channel, message).player.volume = Storage.serverVol.get(message.guild)!!
 
             Storage.playerSearching.put(member, false)
             Storage.playerChooseItem.put(member, null)

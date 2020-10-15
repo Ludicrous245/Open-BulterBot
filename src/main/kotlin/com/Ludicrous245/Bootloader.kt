@@ -1,13 +1,13 @@
 package com.Ludicrous245
 
 import com.Ludicrous245.Listeners.BotInviteListener
-import com.Ludicrous245.data.CommandMother
 import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
 import com.Ludicrous245.data.botData
-import com.Ludicrous245.tools.commands.CommandExecutor
 import com.Ludicrous245.Listeners.CommandListener
 import com.Ludicrous245.Listeners.InteractionListener
+import com.Ludicrous245.management.BannedUser
+import com.Ludicrous245.tools.commands.CommandRegisterer
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -31,8 +31,9 @@ fun main(args:Array<String>){
     builder.addEventListeners(CommandListener())
     builder.addEventListeners(InteractionListener())
     builder.addEventListeners(BotInviteListener())
-    val cm = CommandMother()
-    CommandExecutor.registerCommands(cm.getCommands())
+    CommandRegisterer()
+    BannedUser.ban()
+
 
     val client: JDA = builder.build()
 
@@ -62,6 +63,11 @@ fun main(args:Array<String>){
 
     Storage.client = client
     System.out.println("봇 켜짐")
-    System.out.println(cm.list)
+    System.out.println("" + Storage.commands.size + "개의 명령어가 로딩됨.")
+    var commands = ""
+    for(cmd in Storage.commands){
+        commands += cmd.b() + ", "
+    }
+    System.out.println(commands)
 }
 

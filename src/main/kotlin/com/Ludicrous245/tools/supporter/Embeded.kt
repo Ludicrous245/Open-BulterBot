@@ -8,13 +8,7 @@ import net.dv8tion.jda.api.entities.TextChannel
 import java.awt.Color
 
 class Embeded() {
-    /*
-    굳이 이걸 쓸 메리트는 없었지만 굳이 찾자면 기존거보다 약간 편하다는것 정도?
-    근데 사용 가능한 메소드가 기존보다 많이 제한적임...
-    메소드들도 속도에 친화적이다 보니까 직관적이라고 보기는 힘듬.
-    그냥 기존거보다 살짝 만지기 빠르다에서 그 이상도 이하도 아님.
-    사실 일일이 푸터 달기 귀찮아서 만들긴 했다만...
-     */
+
     private var eb: EmbedBuilder = EmbedBuilder()
 
     fun title(content: String) {

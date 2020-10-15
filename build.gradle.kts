@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "com.Ludicrous245"
-version = "1.3.5-LTS"
+version = "1.4.0"
 
 repositories {
     mavenCentral()
@@ -39,6 +39,7 @@ dependencies {
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
     compile("com.google.apis:google-api-services-youtube:v3-rev212-1.25.0")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
 }
 
 tasks.withType<Jar>() {

@@ -2,7 +2,6 @@ package com.Ludicrous245.Listeners
 
 import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
-import com.Ludicrous245.tools.kits.MuteKit
 import com.Ludicrous245.tools.supporter.Embeded
 import com.Ludicrous245.tools.supporter.Presets
 import net.dv8tion.jda.api.entities.Message
@@ -12,92 +11,92 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 class CommandListener : ListenerAdapter(){
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent){
-        val message:Message = event.message
-        if(!(message.author.isBot)) {
+            val message: Message = event.message
+            if (!(message.author.isBot)) {
 
-         /*   if(Storage.playerSearching.containsKey(message.member)){
-                if(Storage.playerSearching.get(message.member)!!){
-                    try {
-                        Storage.playerChoose.put(message.member, ctx[0].toInt())
-                        Storage.playerSearching.put(message.member, false)
-                    }catch (e:java.lang.Exception){
-                        return
+                if(!Storage.bannedUsr.isEmpty()) {
+                    for (bannedID in Storage.bannedUsr) {
+                        if (message.author.idLong == bannedID){
+                            System.out.println("returned by banned ID")
+                            return
+                        }
                     }
                 }
-            }*/
 
-            if(MuteKit.isMuted(message.guild.id, message.member!!.id)){
-                message.delete().queue()
-                return
-            }
+                //System.out.println(message.author.asTag + "("  + message.author.idLong + ") : " + message.contentRaw + " : " + message.guild.name + "(" + message.guild.idLong + ")")
 
-            if(!Storage.guildPrefix.containsKey(message.guild.id)){
-                if(Config.dev) {
-                    Storage.guildPrefix.put(message.guild.id, ".$")
-                }else {
-                    Storage.guildPrefix.put(message.guild.id, "$")
+                if (!Storage.isLoop.containsKey(message.guild)) {
+                    Storage.isLoop.put(message.guild, false)
+                }
+
+                var prefix = "$"
+
+                if(Config.dev){
+                    prefix = "%"
+                }
+
+                if (message.contentRaw.startsWith(prefix)) {
+
+                    val ctx: List<String> = message.contentDisplay.replace(prefix, "").split(" ")
+                    val cty: List<String> = message.contentRaw.replace(prefix, "").split(" ")
+
+                    val ctxF: ArrayList<String> = ArrayList()
+                    val ctxR: ArrayList<String> = ArrayList()
+
+                    var syntax: String = ""
+                    var syntaxRaw: String = ""
+
+                    for (cxt in ctx) {
+                        ctxF.add(cxt)
+                    }
+
+                    ctxF.removeAt(0)
+
+                    for (syn in ctxF) {
+                        if (syntax == "") {
+                            syntax += syn
+                        } else {
+                            syntax += " $syn"
+                        }
+                    }
+
+                    for (cxt in cty) {
+                        ctxR.add(cxt)
+                    }
+
+                    ctxR.removeAt(0)
+
+                    for (syn in ctxR) {
+                        if (syntaxRaw == "") {
+                            syntaxRaw += syn
+                        } else {
+                            syntaxRaw += " $syn"
+                        }
+                    }
+
+        try {
+            for (cmd in Storage.commands) {
+                val cl: ArrayList<String> = ArrayList()
+
+                cl.addAll(cmd.b().split(","))
+                for (ci in cl) {
+                    if (ci.equals(ctx[0])) {
+
+                        cmd.a(ctxF, syntax, syntaxRaw, message, ctx[0], event.channel)
+
+                    }
                 }
             }
+        }catch (e:Exception){
+            val manager = Embeded()
+            manager.title("오! 이런,")
+            manager.field("자잘한 버그가 발생했나봐요", "Error Code: " + "`" + e.toString() + "`")
+            manager.color(Presets.alert)
+            manager.send(message.channel)
+            return
+        }
 
-            if(!Storage.isLoop.containsKey(message.guild)){
-                Storage.isLoop.put(message.guild, false)
-            }
 
-            val prefix:String = Storage.guildPrefix.get(message.guild.id)!!
-
-            if(message.contentRaw.startsWith(prefix)){
-                for (cmd in Storage.commands) {
-                   // try {
-
-                        val ctx:List<String> = message.contentDisplay.replace(prefix, "").split(" ")
-                        val cty:List<String> = message.contentRaw.replace(prefix, "").split(" ")
-
-                        val ctxF:ArrayList<String> = ArrayList()
-                        val ctxR:ArrayList<String> = ArrayList()
-
-                        var syntax:String = ""
-                        var syntaxRaw:String = ""
-
-                        for(cxt in ctx){
-                            ctxF.add(cxt)
-                        }
-
-                        ctxF.removeAt(0)
-
-                        for(syn in ctxF){
-                            if(syntax == ""){
-                                syntax += syn
-                            }else {
-                                syntax += " $syn"
-                            }
-                        }
-
-                        for(cxt in cty){
-                            ctxR.add(cxt)
-                        }
-
-                        ctxR.removeAt(0)
-
-                        for(syn in ctxR){
-                            if(syntaxRaw == ""){
-                                syntaxRaw += syn
-                            }else {
-                                syntaxRaw += " $syn"
-                            }
-                        }
-
-                        cmd.cmdRun(ctxF, syntax, syntaxRaw, message, ctx[0], event.channel)
-                        
-                    /*} catch (e: Exception) {
-                        //콘솔 보고서 작성
-                        System.out.println("Error occurred in CommandListener")
-                        System.out.println("Reason: " + e.toString())
-                        //서버 보고서 작성
-                        message.channel.sendMessage("실행오류!").queue()
-                        message.channel.sendMessage("에러코드:  " + "`" + e.toString() + "`").queue()
-                        return
-                    }*/
-                }
             }
         }
     }

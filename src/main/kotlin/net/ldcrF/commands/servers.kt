@@ -7,27 +7,31 @@ import com.Ludicrous245.tools.supporter.Presets
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 
-class help : CommandExecutor {
-
+class servers : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        val embed = Embeded()
-        embed.title("도움말")
-        embed.color(Presets.special)
-        for(cmd in Storage.commands){
-            if(cmd.b().contains(",")){
-                embed.field("$" + cmd.b().replace(",", " 또는 "), cmd.c())
-            }else {
-                embed.field("$" + cmd.b(), cmd.c())
-            }
+
+        val servers:Int = Storage.client!!.guilds.size
+
+        val eb = Embeded()
+
+        eb.color(Presets.normal)
+
+        var i = 1
+        for(sv in Storage.client!!.guilds){
+            eb.field(i.toString() + "번 서버", sv.name)
+            i++
         }
-        embed.send(message.channel)
+
+        eb.title(servers .toString() + "개의 서버에서 저를 사용하고있어요!")
+
+        eb.send(message.channel)
     }
 
     override fun b(): String {
-        return "help"
+        return "servers"
     }
 
     override fun c(): String {
-        return "도움말을 확인합니다."
+        return "봇이 접속해 있는 서버를 확인합니다. "
     }
 }

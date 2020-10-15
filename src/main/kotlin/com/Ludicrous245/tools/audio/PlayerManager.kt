@@ -11,9 +11,12 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import com.sun.org.apache.xpath.internal.operations.Bool
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.TextChannel
+import kotlin.concurrent.timer
 
 class PlayerManager {
     companion object{
@@ -28,28 +31,28 @@ class PlayerManager {
         AudioSourceManagers.registerLocalSource(pm)
     }
 
-    fun getGuildMusicManager(server: Guild, channel: MessageChannel): GuildMusicManager {
+    fun getGuildMusicManager(server: Guild, channel: MessageChannel, message: Message): GuildMusicManager {
         val guildID = server.idLong
         var gmm:GuildMusicManager? = mm.get(guildID)
         if (gmm == null) {
-            gmm = GuildMusicManager(pm, server, channel)
+            gmm = GuildMusicManager(pm, server, channel, message)
             mm.put(guildID, gmm)
         }
         server.audioManager.sendingHandler = gmm.getSendHandler()
         return gmm
     }
 
-    fun playL(channel: TextChannel, mchannel: MessageChannel, track: String) {
+    fun playL(channel: TextChannel, mchannel: MessageChannel, track: String, adding:Boolean, message: Message) {
 
 
-        val musicManager = getGuildMusicManager(channel.guild, mchannel)
+        val musicManager = getGuildMusicManager(channel.guild, mchannel, message)
 
         pm.loadItemOrdered(pm, track, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 val queue = queueManager()
 
                 val pm: PlayerManager = PlayerManager().getInstance()
-                val gm: GuildMusicManager = pm.getGuildMusicManager(channel.guild, channel)
+                val gm: GuildMusicManager = pm.getGuildMusicManager(channel.guild, channel, message)
 
                 val tr = gm.player.playingTrack
 
@@ -69,31 +72,67 @@ class PlayerManager {
                     Storage.isLoop.put(channel.guild, false)
                 }
 
-                if(Storage.isLoop.get(channel.guild)!!){
-                    val manager = Embeded()
-                    manager.title("반복재생 목록에 추가됨")
-                    manager.field("제목", track.info.title, true)
-                    manager.color(Presets.normal)
-                    manager.send(channel)
-                }else {
-                    val manager = Embeded()
-                    manager.title("대기열에 추가됨")
-                    manager.field("제목", track.info.title, true)
-                    manager.color(Presets.normal)
-                    manager.send(channel)
+                if(!adding) {
+                    if (Storage.isLoop.get(channel.guild)!!) {
+                        val manager = Embeded()
+                        manager.title("반복재생 목록에 추가됨")
+                        manager.field("제목", track.info.title, true)
+                        manager.color(Presets.normal)
+                        manager.send(channel)
+                    } else {
+                        val manager = Embeded()
+                        manager.title("대기열에 추가됨")
+                        manager.field("제목", track.info.title, true)
+                        manager.color(Presets.normal)
+                        manager.send(channel)
+                    }
                 }
 
                 play(musicManager, track)
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
+
+                val list = ArrayList<String>()
+
+                if(playlist.tracks.isEmpty()){
+                    val manager = Embeded()
+                    manager.title("오! 이런,")
+                    manager.description("플레이리스트 안에 들어있는 음악이 없습니다.")
+                    manager.color(Presets.alert)
+                    manager.send(channel)
+                    return
+                }
+
+                if(50 < playlist.tracks.size){
+                    val manager = Embeded()
+                    manager.title("어우 배불러")
+                    manager.description("플레이리스트 안에 들어있는 음악은 안정성의 이유로 50곡을 넘길 수 없습니다.")
+                    manager.color(Presets.alert)
+                    manager.send(channel)
+                    return
+                }
+
+                for(tra in playlist.tracks){
+                    list.add(tra.info.uri)
+                }
+
+                for(uri in list){
+                    timer(period = 300) {
+                        playL(channel, mchannel, uri, true, message)
+                        cancel()
+                    }
+                }
+
                 val manager = Embeded()
-                manager.title("죄송합니다")
-                manager.field("이 기능은 사용하실 수 없습니다.", "플레이리스트는 정보 누락 문제로 사용하실 수 없습니다.", true)
-                manager.color(Presets.alert)
+                manager.title("플레이리스트가 대기열에 추가되었습니다.")
+                manager.field("추가된 플레이리스트", playlist.name)
+                manager.color(Presets.special)
+                manager.footer("플레이리스트 안에 있는 곡들은 안정성의 이유로 0.3초마다 한개씩 대기열로 옮겨집니다. 따라서, 플레이리스트 추가중 다른 곡을 추가하려 한다면, 대기열이 꼬이거나 버그가 일어날 수 있습니다. 이에 일어나는 문제는 책임지지 않습니다.")
                 manager.send(channel)
                 return
             }
+
             override fun noMatches() {
                 val manager = Embeded()
                 manager.title("오! 이런,")
@@ -103,8 +142,14 @@ class PlayerManager {
             }
             override fun loadFailed(exception: FriendlyException) {
                 val manager = Embeded()
-                manager.title("'제게 큰 병이 생긴건가요... 의사선생님?'")
-                manager.field("재생하던중 예외가 발생했습니다.", "`" + exception.toString() + "`")
+
+                if(exception.toString().equals("com.sedmelluq.discord.lavaplayer.tools.FriendlyException: Received unexpected response from YouTube.")){
+                    manager.title("유튜브 URL 처리중 문제가 발생한것 같아요!")
+                    manager.description("잠깐 기다리신 후에 다시 시도해주세요.")
+                }else{
+                    manager.title("'제게 큰 병이 생긴건가요... 의사선생님?'")
+                    manager.field("재생명령어를 처리하던중 예외가 발생했습니다.", "`" + exception.toString() + "`")
+                }
                 manager.color(Presets.alert)
                 manager.send(channel)
             }
