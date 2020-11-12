@@ -1,13 +1,12 @@
 package net.ldcrF.commands
 
-import com.Ludicrous245.tools.commands.CommandExecutor
-import com.Ludicrous245.tools.commands.CommandRegisterer
+import com.Ludicrous245.io.commands.execute.CommandExecutor
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.ldcrF.functions.audioF
 import java.lang.Exception
 
-class leave : CommandExecutor{
+class leave : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
         try {
             audioF.leave(message, channel)

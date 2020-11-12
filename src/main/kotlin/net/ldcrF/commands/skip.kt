@@ -1,14 +1,14 @@
 package net.ldcrF.commands
 
 import com.Ludicrous245.data.Storage
-import com.Ludicrous245.tools.audio.GuildMusicManager
-import com.Ludicrous245.tools.audio.PlayerManager
-import com.Ludicrous245.tools.audio.TrackScheduler
-import com.Ludicrous245.tools.commands.CommandExecutor
+import com.Ludicrous245.io.audio.GuildMusicManager
+import com.Ludicrous245.io.audio.PlayerManager
+import com.Ludicrous245.io.audio.TrackScheduler
+import com.Ludicrous245.io.commands.execute.CommandExecutor
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 
-class skip : CommandExecutor{
+class skip : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
         val manager: PlayerManager = PlayerManager().getInstance()
         val gm: GuildMusicManager = manager.getGuildMusicManager(message.guild, message.channel, message)
@@ -17,7 +17,7 @@ class skip : CommandExecutor{
 
         if(Storage.isLoop.get(message.guild)!!){
             if(scheduler.get() == null || scheduler.get()!!.isEmpty()){
-                message.channel.sendMessage("한곡만 반복재생중일 경우, 스킵이 불가능합니다.").queue()
+                message.channel.sendMessage("한곡만 반복재생중일 경우, 스킵이 불가능합니다. 반복재생 모드를 종료한 후, 다시 입력해주세요.").queue()
                 return
             }
         }

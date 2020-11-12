@@ -5,9 +5,10 @@ import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
 import com.Ludicrous245.data.botData
 import com.Ludicrous245.Listeners.CommandListener
-import com.Ludicrous245.Listeners.InteractionListener
+import com.Ludicrous245.Listeners.AudioInteractionListener
+import com.Ludicrous245.data.BanStackData
 import com.Ludicrous245.management.BannedUser
-import com.Ludicrous245.tools.commands.CommandRegisterer
+import com.Ludicrous245.io.commands.CommandRegisterer
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -29,10 +30,10 @@ fun main(args:Array<String>){
     }
     builder.setActivity(Activity.playing("시작중..."))
     builder.addEventListeners(CommandListener())
-    builder.addEventListeners(InteractionListener())
+    builder.addEventListeners(AudioInteractionListener())
     builder.addEventListeners(BotInviteListener())
     CommandRegisterer()
-    BannedUser.ban()
+    BannedUser.register()
 
 
     val client: JDA = builder.build()
@@ -41,11 +42,26 @@ fun main(args:Array<String>){
         if(!Config.debug) {
             when (mode) {
                 0 -> {
+                    for(k in BanStackData.userMap.keys){
+                        var hm = BanStackData.getHumanEntity(k)!!
+                        if(hm.stackByCommand != 0){
+                            hm.setSBC(hm.stackByCommand-1)
 
-                    client.presence.activity = Activity.playing(botData.version + "")
+                        }
+                    }
+
+                    client.presence.activity = Activity.playing(botData.version )
                     mode = 1
                 }
                 1 -> {
+                    for(k in BanStackData.userMap.keys){
+                        var hm = BanStackData.getHumanEntity(k)!!
+                        if(hm.stackByCommand != 0){
+                            hm.setSBC(hm.stackByCommand-1)
+
+                        }
+                    }
+
                     val runtime: RuntimeMXBean = ManagementFactory.getRuntimeMXBean()
                     val uptime = (((runtime.uptime / 1000) / 60) / 60)
 
@@ -53,7 +69,18 @@ fun main(args:Array<String>){
                     mode = 2
                 }
                 2 -> {
+                    for(k in BanStackData.userMap.keys){
+                        var hm = BanStackData.getHumanEntity(k)!!
+                        if(hm.stackByCommand != 0){
+                            hm.setSBC(hm.stackByCommand-1)
 
+                        }
+
+                        if(10 <= hm.stackByPlaylist){
+                            hm.setSBP(hm.stackByPlaylist-10)
+
+                        }
+                    }
                     client.presence.activity = Activity.playing("by Ludicrous245")
                     mode = 0
                 }

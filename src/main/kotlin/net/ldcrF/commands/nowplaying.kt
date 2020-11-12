@@ -1,16 +1,15 @@
 package net.ldcrF.commands
 
 import com.Ludicrous245.data.Storage
-import com.Ludicrous245.tools.audio.GuildMusicManager
-import com.Ludicrous245.tools.audio.PlayerManager
-import com.Ludicrous245.tools.commands.CommandExecutor
-import com.Ludicrous245.tools.commands.CommandRegisterer
-import com.Ludicrous245.tools.supporter.Embeded
-import com.Ludicrous245.tools.supporter.Presets
+import com.Ludicrous245.io.audio.GuildMusicManager
+import com.Ludicrous245.io.audio.PlayerManager
+import com.Ludicrous245.io.commands.execute.CommandExecutor
+import com.Ludicrous245.io.supporter.Embeded
+import com.Ludicrous245.io.supporter.Presets
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 
-class nowplaying : CommandExecutor{
+class nowplaying : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
         val manager: PlayerManager = PlayerManager().getInstance()
         val gm: GuildMusicManager = manager.getGuildMusicManager(message.guild, message.channel, message)

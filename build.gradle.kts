@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "com.Ludicrous245"
-version = "1.4.0"
+version = "1.7.0"
 
 repositories {
     mavenCentral()
@@ -33,13 +33,15 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    compile("net.dv8tion:JDA:4.2.0_168")
+    compile("net.dv8tion:JDA:4.2.0_209")
     implementation("com.sedmelluq:lavaplayer-natives-extra:1.3.13")
-    implementation("com.sedmelluq:lavaplayer:1.3.50")
+    implementation("com.sedmelluq:lavaplayer:1.3.59")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
     compile("com.google.apis:google-api-services-youtube:v3-rev212-1.25.0")
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    compile("mysql:mysql-connector-java:5.1.6")
+    compile("org.mariadb.jdbc:mariadb-java-client:2.6.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
+
 }
 
 tasks.withType<Jar>() {

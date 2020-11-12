@@ -1,15 +1,15 @@
 package net.ldcrF.commands
 
 import com.Ludicrous245.data.Storage
-import com.Ludicrous245.tools.audio.PlayerManager
-import com.Ludicrous245.tools.commands.CommandExecutor
-import com.Ludicrous245.tools.supporter.Embeded
-import com.Ludicrous245.tools.supporter.Presets
+import com.Ludicrous245.io.audio.PlayerManager
+import com.Ludicrous245.io.commands.execute.CommandExecutor
+import com.Ludicrous245.io.supporter.Embeded
+import com.Ludicrous245.io.supporter.Presets
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import java.lang.Exception
 
-class volume : CommandExecutor{
+class volume : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
         if(Storage.serverVol.get(message.guild) == null){
             Storage.serverVol.put(message.guild, 50)
@@ -18,11 +18,26 @@ class volume : CommandExecutor{
         if(args.size == 0){
             val eb: Embeded = Embeded()
             eb.color(0x008CCD)
-            eb.field("현재 볼륨", Storage.serverVol.get(message.guild)!!.toString())
+            if(100 < Storage.serverVol.get(message.guild)!!){
+                eb.field("현재 볼륨", "Earrape Mode")
+            }else {
+                eb.field("현재 볼륨", Storage.serverVol.get(message.guild)!!.toString())
+            }
             eb.title("볼륨 마법사")
             eb.send(channel)
         }else if(args.size == 1){
             try {
+                if(args[0].equals("earrape")){
+                    val eb: Embeded = Embeded()
+                    eb.color(Presets.alert)
+                    eb.title("주의! 볼륨이 굉장히 커집니다!")
+                    eb.description("장시간 큰소리로 음악을 들으면 소음성 난청이 발생할 수 있습니다.")
+                    eb.send(channel)
+
+                    Storage.serverVol.put(message.guild, 10000)
+                    return
+                }
+
                 if(100 < args[0].toInt()){
                     val eb: Embeded = Embeded()
                     eb.color(Presets.alert)
@@ -71,6 +86,6 @@ class volume : CommandExecutor{
     }
 
     override fun c(): String {
-        return "재생중인 음악의 소리 크기를 조절합니다."
+        return "재생중인 음악의 소리 크기를 조절합니다. !volume(또는 !vol) earrape로 매우 시끄러운 음악을 들을 수 있습니다."
     }
 }

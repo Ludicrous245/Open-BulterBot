@@ -1,20 +1,27 @@
 package net.ldcrF.commands
 
+import com.Ludicrous245.data.Config
+import com.Ludicrous245.io.SQL.SQLConnector
+import com.Ludicrous245.io.SQL.SQLTypes
 import com.Ludicrous245.io.commands.execute.CommandExecutor
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
-import net.ldcrF.functions.UserFunction
 
-class uptime : CommandExecutor {
+class test:CommandExecutor{
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        UserFunction.uptime(message)
+        val sql = SQLConnector(Config.db_url, Config.db_user, Config.db_pw)
+
+        //sql.createS("guildPrefix", "", SQLTypes.TEXT)
+        //sql.push("Ludicrous245","guildPrefix","test2", "minjae")
+        
     }
 
     override fun b(): String {
-        return "uptime"
+        return "test"
     }
 
     override fun c(): String {
-        return "봇의 업타임을 확인합니다."
+        return "no show"
     }
+
 }

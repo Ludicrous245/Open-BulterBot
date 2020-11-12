@@ -1,6 +1,6 @@
 package net.ldcrF.commands
 
-import com.Ludicrous245.tools.commands.CommandExecutor
+import com.Ludicrous245.io.commands.execute.CommandExecutor
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.ldcrF.functions.UserFunction

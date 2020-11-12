@@ -3,14 +3,12 @@ package net.ldcrF.functions
 import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
 import com.Ludicrous245.data.botData
-import com.Ludicrous245.tools.commands.CommandExecutor
-import com.Ludicrous245.tools.supporter.Embeded
-import com.Ludicrous245.tools.supporter.Presets
+import com.Ludicrous245.io.supporter.Embeded
+import com.Ludicrous245.io.supporter.Presets
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
-import java.lang.Exception
 import java.lang.management.ManagementFactory
 import java.lang.management.RuntimeMXBean
 
@@ -38,6 +36,10 @@ class UserFunction{
         }
 
         fun ping(message: Message) {
+
+
+            //message.channel.send("퐁! " + "`" + ping + "`") 이거 적어 ㅇㅋ?
+
             val ping = Storage.client!!.gatewayPing
             var now = "집계중"
             var color: Int
@@ -72,20 +74,11 @@ class UserFunction{
             }
 
             val eb = Embeded()
-            eb.title("핑")
+            eb.title("퐁!")
             eb.field("핑(ms)", "**" + ping + "ms**", true)
             eb.field("상태", now, true)
             eb.color(color)
             eb.send(message.channel)
-        }
-
-        fun debug(message: Message) {
-            if (message.author.id == Config.owner) {
-                Config.debug = true
-                Storage.client!!.presence.activity =
-                    Activity.playing("디버그 모드입니다. 현재 디버그중인 커맨드는 " + Config.debugging + " 입니다. 사용시 유의해주세요!")
-                message.channel.sendMessage("디버그모드로 변경되었습니다.").queue()
-            }
         }
 
         fun get(message: Message, user: Member?) {

@@ -1,14 +1,11 @@
 package net.ldcrF.commands
 
-import com.Ludicrous245.tools.audio.GuildMusicManager
-import com.Ludicrous245.tools.audio.PlayerManager
-import com.Ludicrous245.tools.commands.CommandExecutor
-import com.Ludicrous245.tools.supporter.Embeded
-import com.Ludicrous245.tools.supporter.Presets
-import com.Ludicrous245.tools.supporter.queueManager
+import com.Ludicrous245.io.commands.execute.CommandExecutor
+import com.Ludicrous245.io.supporter.Embeded
+import com.Ludicrous245.io.supporter.Presets
+import com.Ludicrous245.io.supporter.queueManager
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.managers.AudioManager
 
 class shuffle : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {

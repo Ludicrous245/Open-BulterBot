@@ -1,19 +1,22 @@
 package net.ldcrF.commands
 
-import com.Ludicrous245.tools.audio.GuildMusicManager
-import com.Ludicrous245.tools.audio.PlayerManager
-import com.Ludicrous245.tools.commands.CommandExecutor
-import com.Ludicrous245.tools.supporter.queueManager
+import com.Ludicrous245.data.Config
+import com.Ludicrous245.io.audio.GuildMusicManager
+import com.Ludicrous245.io.audio.PlayerManager
+import com.Ludicrous245.io.commands.execute.CommandExecutor
+import com.Ludicrous245.io.supporter.queueManager
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.managers.AudioManager
 
-class stop : CommandExecutor{
+class stop : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        if(!message.member!!.permissions.contains(Permission.ADMINISTRATOR)){
-            message.channel.sendMessage("관리자 전용 기능입니다.").queue()
-            return
+        if(message.member!!.id != Config.owner) {
+            if (!message.member!!.permissions.contains(Permission.ADMINISTRATOR)) {
+                message.channel.sendMessage("관리자 전용 기능입니다.").queue()
+                return
+            }
         }
 
         channel.sendMessage("대기열을 비우고, 모든 재생을 중단합니다.").queue()
