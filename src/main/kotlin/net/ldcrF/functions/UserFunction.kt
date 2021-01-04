@@ -37,9 +37,6 @@ class UserFunction{
 
         fun ping(message: Message) {
 
-
-            //message.channel.send("퐁! " + "`" + ping + "`") 이거 적어 ㅇㅋ?
-
             val ping = Storage.client!!.gatewayPing
             var now = "집계중"
             var color: Int
@@ -118,16 +115,5 @@ class UserFunction{
             eb.send(message.channel)
         }
 
-        fun info(message: Message, channel: MessageChannel){
-            val eb: Embeded = Embeded()
-            eb.title("Bulterbot")
-            eb.color(Presets.normal)
-            eb.field("버전", botData.version)
-            eb.field("제작자","Ludicrous245(Myuk)")
-            eb.field("도움말", "$"+"help")
-            eb.field("작성 언어","Kotlin")
-            eb.send(channel)
-
         }
-    }
 }

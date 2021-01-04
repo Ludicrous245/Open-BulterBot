@@ -1,7 +1,11 @@
 package com.Ludicrous245.io.audio
 
 import com.Ludicrous245.data.BanStackData
+import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
+import com.Ludicrous245.io.SQL.SQLConnector
+import com.Ludicrous245.io.SQL.SQLNullTester
+import com.Ludicrous245.io.SQL.SQLProgressResult
 import com.Ludicrous245.io.supporter.Embeded
 import com.Ludicrous245.io.supporter.Presets
 import com.Ludicrous245.io.supporter.queueManager
@@ -44,8 +48,6 @@ class PlayerManager {
         return gmm
     }
 
-
-
     fun playL(channel: TextChannel, mchannel: MessageChannel, track: String, adding: Boolean, message: Message) {
 
         val musicManager = getGuildMusicManager(channel.guild, mchannel, message)
@@ -58,6 +60,25 @@ class PlayerManager {
                 val gm: GuildMusicManager = pm.getGuildMusicManager(channel.guild, channel, message)
 
                 val tr = gm.player.playingTrack
+
+                if(message.guild.id.equals("715385102460387341")) {
+
+                    if (track.info.title.contains("T") || track.info.title.contains("t") && track.info.title.contains("I") || track.info.title.contains("i") && track.info.title.contains("K") || track.info.title.contains("k") && track.info.title.contains("O") || track.info.title.contains("o")) {
+                        val manager = Embeded()
+                        manager.title("틱톡 노래는 재생할 수 없습니다.")
+                        manager.color(Presets.special)
+                        manager.send(channel)
+                        return
+                    }
+
+                    if (track.info.title.contains("틱") && track.info.title.contains("톡")) {
+                        val manager = Embeded()
+                        manager.title("틱톡 노래는 재생할 수 없습니다.")
+                        manager.color(Presets.special)
+                        manager.send(channel)
+                        return
+                    }
+                }
 
                 if (queue.isEmpty(channel.guild) && tr == null) {
                     val manager = Embeded()
@@ -96,7 +117,6 @@ class PlayerManager {
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
 
-
                 val pm: PlayerManager = PlayerManager().getInstance()
                 val gm: GuildMusicManager = pm.getGuildMusicManager(channel.guild, channel, message)
 
@@ -104,102 +124,62 @@ class PlayerManager {
 
                 val queue = queueManager()
 
-                if(queue.isEmpty(channel.guild) && tr == null){
+                    if (100 < playlist.tracks.size) {
+
+                        val hm: HumanEntity = BanStackData.getHumanEntity(message.author.idLong)!!
+
+                        var si = playlist.tracks.size - 100
+
+                        hm.setSBP(hm.stackByPlaylist + (si / 2))
+
+                        if (100 <= hm.stackByPlaylist) {
+                            hm.warn = hm.stackByPlaylist / 100
+                        }
+
+                        if (2 < hm.warn) {
+                            BannedUser.ban(message.author.id, message)
+
+                            message.channel.sendMessage(message.author.asTag + "님은 밴되었습니다.").queue()
+
+                            return
+                        }
+
+                        val manager = Embeded()
+                        manager.title("어우 배불러")
+                        manager.description("재생목록 안에 들어있는 음악은 안정성의 이유로 100곡을 넘길 수 없습니다")
+                        manager.color(Presets.alert)
+                        manager.send(channel)
+                        return
+                    }
+
+                    if (playlist.tracks.isEmpty()) {
+                        val manager = Embeded()
+                        manager.title("오! 이런,")
+                        manager.description("재생목록 안에 들어있는 음악이 없습니다.")
+                        manager.color(Presets.alert)
+                        manager.send(channel)
+                        return
+                    }
+
+                    if (queue.isEmpty(channel.guild) && tr == null) {
+                        val manager = Embeded()
+                        manager.title("재생목록 재생중")
+                        manager.field("재생목록 이름", playlist.name, true)
+                        manager.color(Presets.special)
+                        manager.send(channel)
+
+                        playA(musicManager, playlist)
+                        return
+                    }
+
                     val manager = Embeded()
-                    manager.title("플레이리스트 재생중")
-                    manager.field("리스트 제목", playlist.name, true)
+                    manager.title("재생목록이 대기열에 추가되었습니다.")
+                    manager.field("추가된 재생목록", playlist.name)
                     manager.color(Presets.special)
                     manager.send(channel)
-
                     playA(musicManager, playlist)
-                    return
                 }
 
-                val manager = Embeded()
-                manager.title("플레이리스트가 대기열에 추가되었습니다.")
-                manager.field("추가된 플레이리스트", playlist.name)
-                manager.color(Presets.special)
-                manager.send(channel)
-                playA(musicManager, playlist)
-
-                /*
-                val list = ArrayList<String>()
-
-                if (playlist.tracks.isEmpty()) {
-                    val manager = Embeded()
-                    manager.title("오! 이런,")
-                    manager.description("플레이리스트 안에 들어있는 음악이 없습니다.")
-                    manager.color(Presets.alert)
-                    manager.send(channel)
-                    return
-                }
-
-                if (50 < playlist.tracks.size) {
-
-                    val hm: HumanEntity = BanStackData.getHumanEntity(message.author.idLong)!!
-
-                    var si = playlist.tracks.size - 50
-
-                    hm.setSBP(hm.stackByPlaylist + (si / 2))
-
-                    if (100 <= hm.stackByPlaylist) {
-                        hm.warn = hm.stackByPlaylist / 100
-                    }
-
-                    if (2 < hm.warn) {
-                        BannedUser.ban(message.author.idLong, message)
-                        BannedUser.register()
-
-                        message.channel.sendMessage(message.author.asTag + "님은 밴되었습니다.").queue()
-
-                        return
-                    }
-
-                    val manager = Embeded()
-                    manager.title("어우 배불러")
-                    manager.description("플레이리스트 안에 들어있는 음악은 안정성의 이유로 50곡을 넘길 수 없습니다.")
-                    manager.color(Presets.alert)
-                    manager.send(channel)
-                    return
-                }else {
-
-                    val hm: HumanEntity = BanStackData.getHumanEntity(message.author.idLong)!!
-
-                    var si = playlist.tracks.size
-
-                    hm.setSBP(hm.stackByPlaylist + (si / 2))
-
-                    if (100 <= hm.stackByPlaylist) {
-                        hm.warn = hm.stackByPlaylist / 100
-                    }
-
-                    if (2 < hm.warn) {
-                        BannedUser.ban(message.author.idLong, message)
-                        BannedUser.register()
-
-                        message.channel.sendMessage(message.author.asTag + "님은 밴되었습니다.").queue()
-
-                        return
-                    }
-
-
-                    for (tra in playlist.tracks) {
-                        list.add(tra.info.uri)
-                    }
-
-                    for (uri in list) {
-                        timer(period = 300) {
-                            playL(channel, mchannel, uri, true, message)
-                            cancel()
-                        }
-                    }
-
-
-                    return
-                }
-
-                 */
-            }
 
             override fun noMatches() {
                 val manager = Embeded()

@@ -13,9 +13,9 @@ import net.dv8tion.jda.api.entities.MessageChannel
 
 class record : CommandExecutor{
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        if(!Storage.serverQueueRecord.containsKey(message.guild)){
-            Storage.serverQueueRecord.put(message.guild, ArrayList())
-            Storage.serverQueueRecordTask.put(message.guild, ArrayList())
+        if(!Storage.serverQueueRecord.containsKey(message.author)){
+            Storage.serverQueueRecord.put(message.author, ArrayList())
+            Storage.serverQueueRecordTask.put(message.author, ArrayList())
         }
 
         val manager: PlayerManager = PlayerManager().getInstance()
@@ -24,8 +24,8 @@ class record : CommandExecutor{
         val queue: ArrayList<AudioTrack>? = gm.scheduler.get()
         val track = gm.player.playingTrack
 
-        val recordedQueue = Storage.serverQueueRecord.get(message.guild)!!
-        val recordedQueueTask = Storage.serverQueueRecordTask.get(message.guild)!!
+        val recordedQueue = Storage.serverQueueRecord.get(message.author)!!
+        val recordedQueueTask = Storage.serverQueueRecordTask.get(message.author)!!
 
         if(args.size == 1){
             if(args[0].equals("list")){
@@ -90,6 +90,6 @@ class record : CommandExecutor{
     }
 
     override fun c(): String {
-        return "현재 대기열을 기록합니다. (기록이 이미 있다면, 기존에 기록된 대기열에 덮어쓰기됩니다) $" + "record(rec) list로 기록된 음악들을 확인할 수 있습니다."
+        return "현재 대기열을 기록합니다. (기록이 이미 있다면, 기존에 기록된 대기열에 덮어쓰기됩니다) !record(rec) list로 기록된 음악들을 확인할 수 있습니다."
     }
 }

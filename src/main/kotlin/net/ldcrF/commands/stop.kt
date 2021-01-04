@@ -4,6 +4,7 @@ import com.Ludicrous245.data.Config
 import com.Ludicrous245.io.audio.GuildMusicManager
 import com.Ludicrous245.io.audio.PlayerManager
 import com.Ludicrous245.io.commands.execute.CommandExecutor
+import com.Ludicrous245.io.kits.CheckerKit
 import com.Ludicrous245.io.supporter.queueManager
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.managers.AudioManager
 
 class stop : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        if(message.member!!.id != Config.owner) {
+        if(!CheckerKit.isOP(message.author.id)) {
             if (!message.member!!.permissions.contains(Permission.ADMINISTRATOR)) {
                 message.channel.sendMessage("관리자 전용 기능입니다.").queue()
                 return

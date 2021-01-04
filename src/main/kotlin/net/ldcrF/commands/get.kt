@@ -25,6 +25,6 @@ class get : CommandExecutor {
     }
 
     override fun c(): String {
-        return "$" + "get 으로 자신의 정보를 확인합니다. $" + "get guild로 현재 길드의 정보를 확인합니다. $" +"get <@유저>로 헤당 유저의 정보를 확인합니다."
+        return "!get 으로 자신의 정보를 확인합니다. !get guild로 현재 길드의 정보를 확인합니다. !get <@유저>로 헤당 유저의 정보를 확인합니다."
     }
 }

@@ -1,5 +1,7 @@
 package com.Ludicrous245.io.kits
 
+import com.Ludicrous245.data.Config
+import com.Ludicrous245.io.SQL.SQLConnector
 import java.lang.Exception
 import java.net.URL
 
@@ -27,6 +29,11 @@ class CheckerKit {
 
         }
 
+        fun isOP(id:String):Boolean{
+            val sql = SQLConnector(Config.db_url, Config.db_user, Config.db_pw)
+            val isop = sql.take("register", "id", id, "isOP")!!
 
+            return isop == "yes"
+        }
     }
 }

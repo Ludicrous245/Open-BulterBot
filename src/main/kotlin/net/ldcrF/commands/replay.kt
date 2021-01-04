@@ -9,12 +9,12 @@ import net.ldcrF.functions.audioF
 
 class replay : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        if(!Storage.serverQueueRecord.containsKey(message.guild)){
-            Storage.serverQueueRecord.put(message.guild, ArrayList())
-            Storage.serverQueueRecordTask.put(message.guild, ArrayList())
+        if(!Storage.serverQueueRecord.containsKey(message.author)){
+            Storage.serverQueueRecord.put(message.author, ArrayList())
+            Storage.serverQueueRecordTask.put(message.author, ArrayList())
         }
 
-        val recordedQueue = Storage.serverQueueRecord.get(message.guild)!!
+        val recordedQueue = Storage.serverQueueRecord.get(message.author)!!
 
         var msg:Message
 

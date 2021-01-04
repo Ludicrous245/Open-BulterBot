@@ -3,6 +3,11 @@ package com.Ludicrous245.Listeners
 import com.Ludicrous245.data.BanStackData
 import com.Ludicrous245.data.Config
 import com.Ludicrous245.data.Storage
+import com.Ludicrous245.io.SQL.SQLConnector
+import com.Ludicrous245.io.SQL.SQLNullTester
+import com.Ludicrous245.io.SQL.SQLProgressResult
+import com.Ludicrous245.io.commands.execute.DevCommandExecutor
+import com.Ludicrous245.io.kits.CheckerKit
 import com.Ludicrous245.io.supporter.Embeded
 import com.Ludicrous245.io.supporter.Presets
 import com.Ludicrous245.io.xyz.Entity.HumanEntity
@@ -46,18 +51,17 @@ class CommandListener : ListenerAdapter(){
                    BanStackData.getHumanEntity(message.author.idLong)!!.warn = 3
                }*/
 
-            if( 2 < BanStackData.getHumanEntity(message.author.idLong)!!.warn){
-                BannedUser.ban(message.author.idLong, message)
-                BannedUser.register()
+            if(message.contentRaw.contains("SHELL") ||message.contentRaw.contains("shell")){
+                BannedUser.ban(message.author.id, message)
+                return
             }
 
-            if(!Storage.bannedUsr.isEmpty()) {
-                for (bannedID in Storage.bannedUsr) {
-                    if (message.author.idLong == bannedID){
-                        System.out.println("returned by banned ID")
-                        return
-                    }
-                }
+            if( 2 < BanStackData.getHumanEntity(message.author.idLong)!!.warn){
+                BannedUser.ban(message.author.id, message)
+            }
+
+            if(BannedUser.isBanned(message.author.id)){
+                return
             }
 
             System.out.println(message.author.asTag + "("  + message.author.idLong + ") : " + message.contentRaw + " : " + message.guild.name + "(" + message.guild.idLong + ")")
@@ -66,13 +70,48 @@ class CommandListener : ListenerAdapter(){
                 Storage.isLoop.put(message.guild, false)
             }
 
-            var prefix = "$"
+            val sql = SQLConnector(Config.db_url, Config.db_user, Config.db_pw)
+
+            var test = object : SQLNullTester(){
+                override fun run(): SQLProgressResult {
+                    if(sql.take("guildPrefix", "guildID", message.guild.id, "prefix") == null) return SQLProgressResult.NULL
+                    else return SQLProgressResult.SUCCESS
+                }
+            }
+
+            if(sql.isNull(test)){
+                sql.state.execute("INSERT INTO `BulterBot`.`guildPrefix`  VALUES ('${message.guild.id}', '$');")
+            }
+
+            var prefix = sql.take("guildPrefix", "guildID", message.guild.id, "prefix")!!
 
             if(Config.dev){
-                prefix = "%"
+                val st = "%" + prefix
+                prefix = st
             }
 
             if (message.contentRaw.startsWith(prefix)) {
+
+                var test2 = object : SQLNullTester() {
+                    override fun run(): SQLProgressResult {
+                        if (sql.take("register", "id", message.author.id, "tag") == null) return SQLProgressResult.NULL
+                        else return SQLProgressResult.SUCCESS
+                    }
+                }
+
+                if (sql.isNull(test2)) {
+
+                    sql.state.execute("INSERT INTO `BulterBot`.`register`  VALUES ('${message.author.id}', '${message.author.asTag}', '${message.guild.id}','${message.guild.name}','0', 'no', 'no');")
+
+                }else{
+
+                    sql.update("register", "tag", message.author.asTag, "id", message.author.id)
+
+                    val count = sql.takeInt("register", "id", message.author.id, "reloadCount")!! + 1
+
+                    sql.update("register", "reloadCount", count, "id", message.author.id)
+
+                }
 
                 val ctx: List<String> = message.contentDisplay.replace(prefix, "").split(" ")
                 val cty: List<String> = message.contentRaw.replace(prefix, "").split(" ")
@@ -111,7 +150,7 @@ class CommandListener : ListenerAdapter(){
                     }
                 }
 
-                try {
+            try {
                     for (cmd in Storage.commands) {
                         val cl: ArrayList<String> = ArrayList()
 
@@ -120,6 +159,15 @@ class CommandListener : ListenerAdapter(){
                             if (ci.equals(ctx[0])) {
 
                                 val hm = BanStackData.getHumanEntity(message.author.idLong)!!
+
+                                if(cmd is DevCommandExecutor) {
+                                    if(!CheckerKit.isOP(message.author.id)){
+                                        return
+                                    }
+
+                                    cmd.a(ctxF, syntax, syntaxRaw, message, ctx[0], event.channel)
+                                    return
+                                }
 
                                 cmd.a(ctxF, syntax, syntaxRaw, message, ctx[0], event.channel)
 
@@ -135,14 +183,13 @@ class CommandListener : ListenerAdapter(){
                                 hm.setSBC(hm.stackByCommand+1)
 
                                 if(15 <= hm.stackByCommand){
-                                    BannedUser.ban(message.author.idLong, message)
-                                    BannedUser.register()
+                                    BannedUser.ban(message.author.id, message)
                                 }
 
                             }
                         }
                     }
-                }catch (e:Exception){
+               }catch (e:Exception){
                     val manager = Embeded()
                     manager.title("오! 이런,")
                     manager.field("자잘한 버그가 발생했나봐요", "Error Code: " + "`" + e.toString() + "`")

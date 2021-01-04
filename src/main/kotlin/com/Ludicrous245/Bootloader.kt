@@ -33,8 +33,6 @@ fun main(args:Array<String>){
     builder.addEventListeners(AudioInteractionListener())
     builder.addEventListeners(BotInviteListener())
     CommandRegisterer()
-    BannedUser.register()
-
 
     val client: JDA = builder.build()
 

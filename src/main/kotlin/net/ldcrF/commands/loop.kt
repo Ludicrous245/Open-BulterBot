@@ -10,8 +10,6 @@ import net.dv8tion.jda.api.entities.MessageChannel
 
 class loop : CommandExecutor {
     override fun a(args: ArrayList<String>, syntax: String, rawSyntax: String, message: Message, content: String, channel: MessageChannel) {
-        val manager: PlayerManager = PlayerManager().getInstance()
-        val gm: GuildMusicManager = manager.getGuildMusicManager(message.guild, message.channel, message)
         val guild = message.guild
 
         if(!Storage.isLoop.containsKey(guild)){
