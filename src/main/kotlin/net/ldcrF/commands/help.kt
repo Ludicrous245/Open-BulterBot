@@ -41,7 +41,7 @@ class help : CommandExecutor {
             }
 
         for(cmd in Storage.commands) {
-            if (cmd !is DevCommandExecutor) {
+            if (cmd is CommandExecutor) {
                 if (cmd.b().contains(",")) {
                     if (cmd.c().contains("!")) {
                         embed.field(prefix + cmd.b().replace(",", " 또는 "), cmd.c().replace("!", prefix))

@@ -47,10 +47,6 @@ class CommandListener : ListenerAdapter(){
 
             BanStackData.registerHumanEntity(message.author.idLong, hm)
 
-            /*   if(message.author.id == Config.owner){
-                   BanStackData.getHumanEntity(message.author.idLong)!!.warn = 3
-               }*/
-
             if(message.contentRaw.contains("SHELL") ||message.contentRaw.contains("shell")){
                 BannedUser.ban(message.author.id, message)
                 return
@@ -63,8 +59,6 @@ class CommandListener : ListenerAdapter(){
             if(BannedUser.isBanned(message.author.id)){
                 return
             }
-
-            System.out.println(message.author.asTag + "("  + message.author.idLong + ") : " + message.contentRaw + " : " + message.guild.name + "(" + message.guild.idLong + ")")
 
             if (!Storage.isLoop.containsKey(message.guild)) {
                 Storage.isLoop.put(message.guild, false)
@@ -150,7 +144,7 @@ class CommandListener : ListenerAdapter(){
                     }
                 }
 
-            try {
+           try {
                     for (cmd in Storage.commands) {
                         val cl: ArrayList<String> = ArrayList()
 
@@ -192,7 +186,7 @@ class CommandListener : ListenerAdapter(){
                }catch (e:Exception){
                     val manager = Embeded()
                     manager.title("오! 이런,")
-                    manager.field("자잘한 버그가 발생했나봐요", "Error Code: " + "`" + e.toString() + "`")
+                    manager.field("자잘한 버그가 발생했나봐요", "Error Code: " + "`" + e.toString()+ "`")
                     manager.footer("버그는 이곳으로 제보해주세요" + "https://discord.gg/XphePuY ")
                     manager.color(Presets.alert)
                     manager.send(message.channel)

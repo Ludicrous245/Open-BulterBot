@@ -7,4 +7,6 @@ interface CommandBase {
     fun a(args:ArrayList<String>, syntax:String, rawSyntax:String, message: Message, content: String, channel: MessageChannel)
 
     fun b():String
+
+
 }
